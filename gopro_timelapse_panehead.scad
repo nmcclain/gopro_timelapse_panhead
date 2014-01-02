@@ -3,8 +3,6 @@ use <from_thingiverse/5505-publicDomainGearV1_1.scad>;
 $fn = 100;
 
 module gopro_base () {    
-  gear_guide_layer_height = gear_height+1;
-  pin_height = gear_guide_layer_height+(gear_height*3/4);
 
   union() { // main base
     cube([base_length, base_width, gear_guide_layer_height/4]); // Base layer
@@ -30,22 +28,23 @@ module gopro_base () {
   }
 
   // corner pads - to help the thing stick w/o printing a raft layer
-  cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
-  translate([0, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
-  translate([base_length, 0, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
-  translate([base_length, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //translate([0, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //translate([base_length, 0, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //translate([base_length, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
 };
 
 
 module gopro_top () {
 
+  servo_offset = (large_gear_or/2)-(5);
   difference() {
    // main top plus servo holder
    union() {
-     cube([base_length, base_width, gear_height/4]); // main top layer
+     cube([base_length, base_width, gear_height/3]); // main top layer
      difference () { // servo holder
-       translate([15, (base_width/2) - (servo_width+buffer)/2, gear_height/4]) cube([servo_length+buffer*2, servo_width+buffer, servo_bottom_height+4]); 
-       translate([15+buffer/2, (base_width/2) - (servo_width)/2 , (gear_height/4)+4]) cube([servo_length, servo_width, servo_bottom_height]); 
+       translate([servo_offset, (base_width/2) - (servo_width+buffer)/2, gear_height/4]) cube([servo_length+buffer*6, servo_width+buffer, servo_bottom_height+4]); 
+       translate([servo_offset+buffer*3, (base_width/2) - (servo_width)/2 , (gear_height/4)+4]) cube([servo_length, servo_width, servo_bottom_height]); 
      }
    }
 
@@ -56,23 +55,21 @@ module gopro_top () {
    translate([base_length-(buffer+hole), base_width-(buffer+hole), 0]) cylinder(gear_height*2, hole, hole);
    
    // gear connector holes
-   translate([large_gear_or, base_width/2, gear_height/4]) cylinder(servo_bottom_height, servo_width/2, servo_width/2); // large servo hole
-   translate([large_gear_or-7, base_width/2, gear_height/4]) cylinder(servo_bottom_height, 3, 3); // small servo hole
-   translate([large_gear_or, base_width/2, 0]) cylinder(servo_bottom_height, 4, 4); // smallest servo hole
-   translate([small_gear_or+large_gear_or*2-tooth_depth, base_width/2, 0]) cylinder(gear_height, small_gear_or-tooth_depth, small_gear_or-tooth_depth); // small gear gopro mount hole
-
+   translate([large_gear_or+buffer, base_width/2, gear_height/4]) cylinder(servo_bottom_height, servo_width/2, servo_width/2); // large servo hole
+   translate([large_gear_or-7+buffer, base_width/2, gear_height/4]) cylinder(servo_bottom_height, 3, 3); // small (main shaft) servo hole
+   translate([large_gear_or+buffer, base_width/2, 0]) cylinder(servo_bottom_height, 4, 4); // smallest servo hole
+   translate([small_gear_or+large_gear_or*2-(tooth_depth*2), base_width/2, 0]) cylinder(gear_height, small_gear_or-tooth_depth, small_gear_or-tooth_depth); // small gear gopro mount hole
   }
 
   // corner pads - to help the thing stick w/o printing a raft layer
-  cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
-  translate([0, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
-  translate([base_length, 0, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
-  translate([base_length, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //translate([0, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //translate([base_length, 0, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
+  //translate([base_length, base_width, 0]) cylinder(corner_pad_height, corner_pad_r, corner_pad_r);
 }
 
 module gopro_small_gear ( ) {
   // GoPro mount on small gear:
-  small_gear_or = outer_radius(mm_per_tooth=mm_per_tooth,number_of_teeth=small_gear_teeth,clearance=0);
   union() {
     translate([0, -4, gear_height*2]) difference() {
       translate([0, 0, -100]) import("from_thingiverse/117862-gopro_mount.stl");  
@@ -108,6 +105,8 @@ buffer = 2;
 gear_height = 3;
 hole=4;
 
+gear_guide_layer_height = gear_height+1;
+
 large_gear_teeth = 20;
 small_gear_teeth = 10;
 tooth_depth = 2;
@@ -118,13 +117,14 @@ small_gear_or = outer_radius(mm_per_tooth=mm_per_tooth,number_of_teeth=small_gea
 
 pin_edge_r = hole-.15;
 pin_r = hole-.2;
+pin_height = gear_guide_layer_height+gear_height;
 
 servo_arm_end_r = 2;
 servo_arm_len = 14;
 servo_arm_mid_r = 4;
 servo_bottom_height = 4.5;
 servo_length = 23.5;
-servo_width = 12.5;
+servo_width = 12.25;
 servo_screw_hole_r = .9;
 
 corner_pad_height = .2;
